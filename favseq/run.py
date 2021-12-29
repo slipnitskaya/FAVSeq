@@ -75,7 +75,7 @@ def run():
     # rank features using RFE-based-on-best-model
     best_model_name = reports_summary.iloc[0].name
     best_params = {**setup[best_model_name]['params_static'], **reports_summary.iloc[0].params}
-    rfe_scores, rfe_ranking = get_rfe_scores(X, y, best_model_name, best_params, scorer, splitter)
+    rfe_scores, rfe_ranking = get_rfe_scores(X, y, args.task, best_model_name, best_params, scorer, splitter)
 
     # save RFE summaries
     pd.DataFrame.from_records(
