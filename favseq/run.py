@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 
@@ -33,6 +34,9 @@ def run():
     parser.add_argument('-S', '--save-individual', action='store_true')
 
     args = parser.parse_args()
+
+    np.random.seed(args.random_seed)
+
     task_id = 'regr' if args.task == Task.regression else 'clf'
 
     # create an output directory
