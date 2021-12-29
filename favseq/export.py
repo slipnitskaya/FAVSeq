@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from .base import ClassificationScore, convert_model_name
+from .base import Task, ClassificationScore, convert_model_name
 
 from typing import Dict, Optional
 
@@ -23,12 +23,12 @@ def plot_performance_summary(
     if score_name in map(str, ClassificationScore):
         y_label = ' '.join([str(w).capitalize() for w in score_name.split('_')])
         legend_loc = 'lower center'
-        y_lim = {'bottom': None, 'top': None}
+        y_lim = {'bottom': summary.values.reshape(-1).min() * 0.95, 'top': summary.values.reshape(-1).max() * 1.05}
     else:
         summary = summary * -1
         y_label = score_name.upper()
         legend_loc = 'upper right'
-        y_lim = {'bottom': summary.values.reshape(-1).min() - 1e-3, 'top': 1e0}
+        y_lim = {'bottom': 0.0}
 
     ax = summary.plot(kind='bar', yerr=df_std, style=None, rot=0, xlabel='models', ylabel=y_label)  # noqa
     ax.set_ylim(**y_lim)
@@ -69,14 +69,16 @@ def plot_ranking_results(
     feature_scores = feature_scores.head(n_top)
     feature_scores = feature_scores.sort_values(by='score', ascending=True)
 
-    feature_scores.plot(kind='barh', legend=False, rot=0, ylabel=None)
-
+    feature_scores.plot(kind='barh', legend=False, rot=0)
+    plt.xlabel('relevance')
+    plt.ylabel(None)
     plt.savefig(os.path.join(out_dir, f'ranking_{convert_model_name(model_name)}'))
     plt.close()
 
 
 def plot_rfe_scores(
     rfe_scores: np.ndarray,
+    task: Task,
     model_name: str,
     out_dir: str
 ) -> None:
@@ -90,7 +92,7 @@ def plot_rfe_scores(
         n_subset_feats, rfe_scores_mean - rfe_scores_std, rfe_scores_mean + rfe_scores_std, color='C0', alpha=0.2
     )
     plt.xlabel('feature subset size')
-    plt.ylabel('cross validation loss')
+    plt.ylabel(f'cross validation {"score" if task == Task.classification else "loss"}')
 
-    plt.savefig(os.path.join(out_dir, f'scores_RFE-{convert_model_name(model_name)}'))
+    plt.savefig(os.path.join(out_dir, f'scores_{convert_model_name(model_name)}'))
     plt.close()

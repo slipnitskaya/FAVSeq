@@ -77,7 +77,7 @@ def run():
     best_params = {**setup[best_model_name]['params_static'], **reports_summary.iloc[0].params}
     rfe_scores, rfe_ranking = get_rfe_scores(X, y, args.task, best_model_name, best_params, scorer, splitter)
 
-    # save RFE summaries
+    # save RFE summary
     pd.DataFrame.from_records(
         rfe_scores, index=list(range(1, len(rfe_scores) + 1)), columns=[f'split{n}' for n in range(args.num_folds)]
     ).to_csv(f'{out_dir}/scores_RFE-{convert_model_name(best_model_name)}.csv', sep=';')  # noqa
@@ -85,8 +85,9 @@ def run():
 
     # visualize RFE summary
     plot_rfe_scores(
-        rfe_scores=rfe_scores,
-        model_name=best_model_name,
+        rfe_scores,
+        task=args.task,
+        model_name=f'RFE-{best_model_name}',
         out_dir=out_dir
     )
     plot_ranking_results(
