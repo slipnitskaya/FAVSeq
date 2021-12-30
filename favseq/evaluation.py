@@ -219,24 +219,6 @@ def run_cv(
                 df_features['score'].abs().sort_values(ascending=False).index
             )
 
-        splitter = skmod.ShuffleSplit(
-            n_splits=splitter.n_splits,
-            test_size=splitter.test_size,
-            random_state=splitter.random_state
-        )
-        for train_idx, test_idx in splitter.split(X.values, y):
-            X_train, X_test = X.values[train_idx], X.values[test_idx]  # noqa
-            y_train, y_test = y[train_idx], y[test_idx]
-
-            scaler = skprep.StandardScaler()
-            scaler.fit(X_train)
-            X_train = scaler.transform(X_train)  # noqa
-            X_test = scaler.transform(X_test)  # noqa
-
-            model_params = {**setup[model_name]['params_static'], **cv.named_steps.gridsearchcv.best_params_}
-            est = cv.named_steps.gridsearchcv.best_estimator_.__class__(**model_params)
-            est.fit(X_train, y_train)
-
         best_model = model_reports[model_name].iloc[0]
         best_model.name = model_name
         perf_reports.append(best_model)

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from .base import Task, ClassificationScore, convert_model_name
+from .base import ClassificationScore, convert_model_name
 
 from typing import Dict, Optional
 
@@ -48,8 +48,8 @@ def store_individual_reports(
 
     for model_name, feature_scores in results_individual.items():
         if save:
-            path_to_rank = f'{out_dir}/ranking_{convert_model_name(model_name)}.csv'
-            feature_scores.to_csv(path_to_rank, sep=';')  # noqa
+            path_to_rank = os.path.join(out_dir, f'ranking_{convert_model_name(model_name)}.csv')
+            feature_scores.to_csv(path_to_rank)  # noqa
 
             plot_ranking_results(
                 feature_scores,
@@ -78,7 +78,6 @@ def plot_ranking_results(
 
 def plot_rfe_scores(
     rfe_scores: np.ndarray,
-    task: Task,
     model_name: str,
     out_dir: str
 ) -> None:
@@ -92,7 +91,7 @@ def plot_rfe_scores(
         n_subset_feats, rfe_scores_mean - rfe_scores_std, rfe_scores_mean + rfe_scores_std, color='C0', alpha=0.2
     )
     plt.xlabel('feature subset size')
-    plt.ylabel(f'cross validation {"score" if task == Task.classification else "loss"}')
+    plt.ylabel(f'CV objective')
 
     plt.savefig(os.path.join(out_dir, f'scores_{convert_model_name(model_name)}'))
     plt.close()

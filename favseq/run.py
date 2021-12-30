@@ -45,7 +45,7 @@ def run():
 
     # load data
     print(f'Loading `{os.path.basename(args.path_to_input)}`...')
-    df = pd.read_csv(args.path_to_input, sep=';', index_col=0)
+    df = pd.read_csv(args.path_to_input, index_col=0)
 
     df = prepare_data(df, args.task, f'target_{task_id}', args.fillna, args.class_balance)
     setup = json.load(open('protocols.json'))
@@ -80,13 +80,12 @@ def run():
     # save RFE summary
     pd.DataFrame.from_records(
         rfe_scores, index=list(range(1, len(rfe_scores) + 1)), columns=[f'split{n}' for n in range(args.num_folds)]
-    ).to_csv(f'{out_dir}/scores_RFE-{convert_model_name(best_model_name)}.csv', sep=';')  # noqa
-    rfe_ranking.to_csv(f'{out_dir}/ranking_RFE-{convert_model_name(best_model_name)}.csv', sep=';')  # noqa
+    ).to_csv(f'{out_dir}/scores_RFE-{convert_model_name(best_model_name)}.csv')  # noqa
+    rfe_ranking.to_csv(f'{out_dir}/ranking_RFE-{convert_model_name(best_model_name)}.csv')  # noqa
 
     # visualize RFE summary
     plot_rfe_scores(
         rfe_scores,
-        task=args.task,
         model_name=f'RFE-{best_model_name}',
         out_dir=out_dir
     )
