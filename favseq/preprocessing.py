@@ -92,7 +92,7 @@ def balance_classes(
 def impute_features(
     df: pd.DataFrame,
     imp_method: ImpMethod,
-    n_neighbors: Optional[int] = 10
+    n_neighbors: Optional[int] = 100
 ) -> pd.DataFrame:
 
     print(f'Imputing missing values with `{imp_method.name}`...')
