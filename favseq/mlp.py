@@ -4,6 +4,8 @@ import sklearn.neural_network as sknn
 from scipy.special import xlogy
 from scipy.special import expit as logistic_sigmoid
 
+from sklearn.metrics import balanced_accuracy_score
+
 from sklearn.neural_network._multilayer_perceptron import safe_sparse_dot  # noqa
 
 from sklearn.neural_network._multilayer_perceptron import DERIVATIVES  # noqa
@@ -53,7 +55,7 @@ def weighted_log_loss(y_true, y_prob, weights):
 
     loss = -xlogy(y_true, y_prob)
     weighted_loss = weights * loss
-    weighted_scalar_loss = (weighted_loss.sum() / y_prob.shape[0]) / np.sum(weights)
+    weighted_scalar_loss = (weighted_loss.sum() / y_prob.shape[0])
 
     return weighted_scalar_loss
 
@@ -209,5 +211,9 @@ class MLPClassifierWithGrad(sknn.MLPClassifier):
         labels, counts = np.unique(y, return_counts=True)
         self.class_weights_ = np.ones(len(labels))
         self.class_weights_[labels] = 1.0 / counts
+        self.class_weights_ /= np.min(self.class_weights_)
 
         return super(MLPClassifierWithGrad, self).fit(X, y)
+
+    def score(self, X, y, sample_weight=None):  # noqa
+        return balanced_accuracy_score(y, self.predict(X), sample_weight=sample_weight)
